@@ -1,0 +1,130 @@
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Olympic Medals</title>
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+  <script src="DrillDown.js" language="javascript"></script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+    }
+    th {
+      background-color: #DDDDDD;
+    }
+    th,
+    td {
+      border: 1px solid #888888;
+    }
+    table {
+      margin-bottom: 20px;
+    }
+    td.measure {
+      text-align: right;
+    }
+    #dimensions {
+      float: left;
+    }
+    .dimension {
+      margin-right: 10px;
+      margin-bottom: 10px;
+      margin-top:10px;
+      padding: 4px;
+      border: 1px solid #888;
+      cursor: pointer;
+    }
+    .breakCol {
+      cursor:pointer;
+      color:blue;
+    }
+    .measureHeader, .breakHeader {
+      cursor:pointer;
+    }
+    .breakHeader {
+      color:white;
+    }
+    #list {
+      margin-top: 10px;
+      float: left;
+    }
+    .breakDim,
+    .filterDim,
+    .futureDim {
+      margin: 1px;
+      padding: 3px;
+      color:white;
+      font-weight:600;
+      cursor:pointer;
+    }
+  
+    .breakDim, .breakHeader {
+      background-color: #335533;
+    }
+    .filterDim {
+      background-color: #772211;
+    }
+    .futureDim {
+      background-color: #221177;
+    }
+    .dsNormal, .dsSelected { 
+      margin:5px;
+      padding:5px;
+    }
+    .dsNormal {
+      background-color: #EEEEEE;
+      cursor:pointer;
+    }
+    .dsSelected {
+       background-color: #888888;
+       color:white;
+    }
+    .removeSel {
+      margin:5px;
+      padding:5px;
+      background-color: lightgray;
+      font-weight:bold;
+      border:1px solid #BBBBBB;
+    }
+    .countDim {
+      margin:5px;
+    }
+    .pagingControls {
+      cursor:pointer;
+      font-size: 16pt;
+    }
+    #detail {
+      margin-top:10px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1><a style="text-decoration:none" href="./">Olympic Medals</a></h1>
+
+  <div id="dataSource"></div>
+  <div id="dimensions"></div>
+  <div id="list"></div>
+  <div style="clear:both">
+    <div id="backButton" class='pagingControls' style="display:none;margin-bottom:20px"><a href="javascript:drillDown.showSummary();">Back</a></div>
+    <div>
+      <span class='pagingControls'><a href='javascript:drillDown.prevDetailPage()'>previous</a></span> 
+      |
+      <select id="pageSize" onchange="drillDown.detailLimit=parseInt(this.value);drillDown.getDetail()">
+        <option value="10">10</option>
+        <option value="25" selected>25</option>
+        <option value="100">100</option>
+        <option value="500">500</option>
+        <option value="1000">1000</option>
+      </select>
+      | <span class='pagingControls'><a href='javascript:drillDown.nextDetailPage()'>next</a></span>
+    </div>
+  <div id="detail"></div>
+  </div>
+
+</body>
+
+</html>
