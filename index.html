@@ -9,8 +9,12 @@
   <script src="DrillDown.js" language="javascript"></script>
 
   <style>
+    div {
+      // border: 1px solid black;
+    }
     body {
       font-family: sans-serif;
+      width: 5000px;
     }
     th {
       background-color: #DDDDDD;
@@ -48,7 +52,6 @@
     }
     #list {
       margin-top: 10px;
-      float: left;
     }
     .breakDim,
     .filterDim,
@@ -80,6 +83,7 @@
     .dsSelected {
        background-color: #888888;
        color:white;
+       border: 1px solid black;
     }
     .removeSel {
       margin:5px;
@@ -97,6 +101,10 @@
     }
     #detail {
       margin-top:10px;
+      font-size:8pt;
+    }
+    #detail td, #detail th {
+      font-size:8pt;    
     }
   </style>
 </head>
@@ -107,11 +115,12 @@
 
   <div id="dataSource"></div>
   <div id="dimensions"></div>
+  <div style="float:left;">
   <div id="list"></div>
-  <div style="clear:both">
-    <div id="backButton" class='pagingControls' style="display:none;margin-bottom:20px"><a href="javascript:drillDown.showSummary();">Back</a></div>
+  <div>
+    <div id="backButton" class='pagingControls' style="display:none;margin:10px"><a href="javascript:drillDown.showSummary();">Back</a></div>
     <div>
-      <span class='pagingControls'><a href='javascript:drillDown.prevDetailPage()'>previous</a></span> 
+      <span class='pagingControls'><a onClick='javascript:drillDown.prevDetailPage()'>previous</a></span> 
       |
       <select id="pageSize" onchange="drillDown.detailLimit=parseInt(this.value);drillDown.getDetail()">
         <option value="10">10</option>
@@ -120,9 +129,10 @@
         <option value="500">500</option>
         <option value="1000">1000</option>
       </select>
-      | <span class='pagingControls'><a href='javascript:drillDown.nextDetailPage()'>next</a></span>
+      | <span class='pagingControls'><a onClick='javascript:drillDown.nextDetailPage()'>next</a></span>
     </div>
   <div id="detail"></div>
+  </div>
   </div>
 
 </body>
