@@ -14,13 +14,9 @@ function sprintf(format, vars) {
   return format;
 }
 
-function addCommas(i) {
-  var re = /(\d)(\d\d\d)(,|$)/;
-  var matches;
-  while(matches = re.exec(i)) {
-    i = i.replace(matches[0],matches[1] + "," + matches[2]);
-  }
-  return i;
+function addCommas(x) {
+    if (x != null)
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 function compareInt (a,b,direction) { 
@@ -46,6 +42,7 @@ var DrillDown = function () {
 
     var selDataSource = '';
     if (this.tableInfo.length > 1) {
+      selDataSource = 'Cubes: ';
       // If there are more than 1 data sources, display links to switch.
       for (var i=0;i<this.tableInfo.length;i++) {
          selDataSource += sprintf("<span id='dataSource_%s' class='dsNormal' onclick='javascript:drillDown.changeDataSource(%s);'>", [i,i]);
@@ -481,9 +478,11 @@ var DrillDown = function () {
     var p = {};
     p.filters = this.getFilterSel();
     p.filterCols = this.getFilterCols();
-    p.tab = this.tab.replace("_summary","");
+    p.tab = this.tab.replace("_summary","_fact");
+
     //p.filters = p.filters.replace('year','year(date)');
     //p.filtersCols = p.filterCols.replace('year', 'year(date)');
+
     p.cols = this.getCols();
     p.limit = this.detailLimit;
     p.offset = this.detailOffset;
