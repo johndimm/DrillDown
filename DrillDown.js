@@ -431,7 +431,7 @@ var DrillDown = function () {
         if (prev != 'prev' || next != 'next') 
           var prevNext = sprintf("%s | %s",[prev,next]);;
         $("#count_" + i).html(prevNext);
-      }
+      }.bind(this)
     });
 
   }
