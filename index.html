@@ -8,6 +8,15 @@
 
   <script src="DrillDown.js" language="javascript"></script>
 
+    <script language="javascript">
+        function toggleDetail() {
+            $('#detail_section').css('visibility',
+              $('#detail_section').css('visibility') == 'hidden' ? 'visible' : 'hidden'
+            );
+
+        }
+    </script>
+
   <style>
     div {
       // border: 1px solid black;
@@ -103,36 +112,49 @@
       margin-top:10px;
       font-size:8pt;
     }
+    #detail_section {
+      visibility: hidden;
+    }
     #detail td, #detail th {
       font-size:8pt;    
+    }
+
+    #dataSource {
+      margin-bottom: 5px;
+    }
+
+    #detail_button {
+      font-size:18pt;
     }
   </style>
 </head>
 
 <body>
 
-  <h1><a style="text-decoration:none" href="./">Olympic Medals</a></h1>
+  <h1><a id="page_title" style="text-decoration:none" href="./">Olympic Medals</a></h1>
 
   <div id="dataSource"></div>
   <div id="dimensions"></div>
   <div style="float:left;">
-  <div id="list"></div>
-  <div>
-    <div id="backButton" class='pagingControls' style="display:none;margin:10px"><a href="javascript:drillDown.showSummary();">Back</a></div>
-    <div>
-      <span class='pagingControls'><a onClick='javascript:drillDown.prevDetailPage()'>previous</a></span> 
-      |
-      <select id="pageSize" onchange="drillDown.detailLimit=parseInt(this.value);drillDown.getDetail()">
-        <option value="10">10</option>
-        <option value="25" selected>25</option>
-        <option value="100">100</option>
-        <option value="500">500</option>
-        <option value="1000">1000</option>
-      </select>
-      | <span class='pagingControls'><a onClick='javascript:drillDown.nextDetailPage()'>next</a></span>
-    </div>
-  <div id="detail"></div>
-  </div>
+      <div id="list"></div>
+      <button id="detail_button" onClick="toggleDetail()">Detail</button>
+
+      <div id="detail_section">
+        <div id="backButton" class='pagingControls' style="display:none;margin:10px"><a href="javascript:drillDown.showSummary();">Back</a></div>
+        <div>
+          <span class='pagingControls'><a onClick='javascript:drillDown.prevDetailPage()'>previous</a></span>
+          |
+          <select id="pageSize" onchange="drillDown.detailLimit=parseInt(this.value);drillDown.getDetail()">
+            <option value="10">10</option>
+            <option value="25" selected>25</option>
+            <option value="100">100</option>
+            <option value="500">500</option>
+            <option value="1000">1000</option>
+          </select>
+          | <span class='pagingControls'><a onClick='javascript:drillDown.nextDetailPage()'>next</a></span>
+        </div>
+        <div id="detail"></div>
+      </div>
   </div>
 
 </body>
