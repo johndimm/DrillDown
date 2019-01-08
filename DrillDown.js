@@ -7,6 +7,10 @@ $(document).ready(function() {
   drillDown.getDataSources();
 });
 
+function escapeForSQL(str) {
+  return str.replace(/'/g, "\\'\\'").replace(/&/g, "\&");
+}
+
 function sprintf(format, vars) {
   for (var i=0;i<vars.length;i++) {
     format = format.replace("%s", vars[i]);
@@ -58,12 +62,13 @@ var DrillDown = function () {
     this.breakDown();
   }
 
-  this.addDataSource = function (table, dimensions, measures, detailColumns) {
+  this.addDataSource = function (table, dimensions, measures, detailColumns, page_title) {
     var info = new Object;
     info.table = table;
     info.dims = dimensions;
     info.detailColumns = detailColumns;
     info.measures = measures;
+    info.page_title = page_title;
     this.tableInfo.push(info);
   }
 
@@ -79,6 +84,8 @@ var DrillDown = function () {
     this.detailCols = this.tableInfo[idx].detailColumns;
     this.measures = this.tableInfo[idx].measures;
     $("#dataSource_" + idx).attr("class", "dsSelected")
+    $("#page_title").html(this.tableInfo[idx].page_title);
+    window.document.title = this.tableInfo[idx].page_title;
   }
 
   this.changeDataSource = function (idx) {
@@ -121,6 +128,7 @@ var DrillDown = function () {
     for (var i = 0; i < keys.length; i++) {
       if (i > 0) result += " AND ";
       var eqVal = "='" + this.filters[keys[i]] + "'";
+      //var eqVal = "='" + this.filters[keys[i]] + "'";
       if (this.filters[keys[i]] == '') eqVal = " is null ";
       result += "`" + this.dimensions[keys[i]] + "`" + eqVal;
     }
@@ -180,8 +188,16 @@ var DrillDown = function () {
     this.displaySummary(this.rows);
   }
 
+  this.selectItemLink = function(idx, str, inc) {
+     if (inc == null) inc = 0;
+     var qstr = '\'' + escapeForSQL(str) + '\'';
+     var link = sprintf("\"javascript:drillDown.selectItem(%s,%s,%s)\"", [idx, qstr, inc]);
+     return link;
+  }
+
+
   this.selectItem = function (j, cellVal, inc) {
-    var displayCellVal = cellVal;
+    var displayCellVal = cellVal.replace(/''/g, "'");
     var onClick = "drillDown.removeSelection(" + j + ");";
     $("#sel_" + j).text(displayCellVal).attr("onclick",onClick);
     this.filters[j] = cellVal;
@@ -211,8 +227,9 @@ var DrillDown = function () {
           var cellVal = rows[i].cols[j];
           var dim = this.dimensions.indexOf(headers.cols[j]);
           if (dim != -1 && i>0) {
-             cellVal = sprintf("<a title='restrict %s to %s' href='javascript:drillDown.selectItem(%s,\"%s\")'>%s</a>", 
-               [headers.cols[j], cellVal,dim,cellVal,cellVal]);
+             var link = this.selectItemLink(dim, cellVal, 0);
+             cellVal = sprintf("<a title='restrict %s to %s' href=%s>%s</a>",
+               [headers.cols[j], cellVal, link, cellVal]);
           }
           if (cellVal.indexOf('http://') == 0) cellVal = sprintf("<a href='%s'>%s</a>", [cellVal, cellVal]);
           if (cellVal == '') cellVal = '&nbsp;';
@@ -280,8 +297,11 @@ var DrillDown = function () {
       // 1. Show breakdown column.
       j = 0;
       var cellVal = rows[i].cols[j];
-      var onClick = sprintf("onclick='drillDown.selectItem(%s,\"%s\",1)'", [this.groupBy, cellVal]);
+      var link = this.selectItemLink(this.groupBy, cellVal, 1);
+      var onClick = sprintf("onclick=%s", [link]);
+      console.log(onClick);
       displayVal = sprintf("<div id='item_%s' class='breakCol' %s>%s</div>", [i, onClick, cellVal]);
+      console.log(displayVal);
 
       result += "<td>" + displayVal + "</td>";
 
@@ -321,7 +341,7 @@ var DrillDown = function () {
 
   this.getDataSources = function() {
     var p = {};
-    p.cols = 'table_name, dimensions, measures, detail_columns';
+    p.cols = 'table_name, dimensions, measures, detail_columns, page_title';
     p.tab = 'drilldown_info';
     p.q = 'all';
     var me = this;
@@ -336,13 +356,16 @@ var DrillDown = function () {
         for (var i=1; i<lines.length; i++) {
           if (lines[i].length > 0) {
             var cols = lines[i].split('\t');
-            // Assume 4 columns, as requested.
+
+            // Assume 5 columns.
             var table_name = cols[0];
+
             // Remove spaces around field names.
             var dimensions = cols[1].split(/\s*,\s*/);
             var measures = cols[2].split(/\s*,\s*/);
             var detail_columns = cols[3].split(/\s*,\s*/);
-            me.addDataSource(table_name, dimensions, measures, detail_columns);
+            var page_title = cols[4];
+            me.addDataSource(table_name, dimensions, measures, detail_columns, page_title);
           }
         }
         me.Init();
@@ -394,12 +417,14 @@ var DrillDown = function () {
         var prev = 'prev';
         if (idx > 0 && rows[idx-1].cols[0] != '') {
           var prevDimVal = rows[idx-1].cols[0];
-          prev = sprintf ("<a title='%s' href='javascript:drillDown.selectItem(%s,\"%s\")'>prev</a>",[prevDimVal, i, prevDimVal]);
+          var link = this.selectItemLink(i, prevDimVal, 0);
+          prev = sprintf ("<a title='%s' href=%s>prev</a>",[prevDimVal, link]);
         }
         var next = 'next';
         if (idx > -1 && idx < rows.length - 1 && rows[idx+1].cols[0] != '') {
           var nextDimVal = rows[idx+1].cols[0];
-          next = sprintf ('<a title=\'%s\' href="javascript:drillDown.selectItem(%s,\'%s\')">next</a>',[nextDimVal, i, nextDimVal]);
+          var link = this.selectItemLink(i, nextDimVal, 0);
+          next = sprintf ('<a title=\'%s\' href=%s>next</a>',[nextDimVal, link]);
         }
 
         var prevNext = '';
